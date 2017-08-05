@@ -34,10 +34,10 @@ const anonConfig = {
  * the same config has been passed in twice
 */
 
-export class Connection {
+export default class Connection {
   constructor (config, request) {
     this.config = config
-    this.connection = this.config.connection
+    // this.connection = this.config.connection
     this.request = request
   }
 
