@@ -1,6 +1,6 @@
 {
   "name": "aquameta-connection",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Manager for Aquameta connections",
   "main": "dist/aquameta-connection.js",
   "module": "dist/aquameta-connection.es.js",
