@@ -8,7 +8,7 @@ const anonConfig = {
   host: 'localhost',
   port: 5432,
   max: 4,
-  idleTimeoutMillis: 30000
+  idleTimeoutMilliseconds: 30000
 }
 
 /**
@@ -37,7 +37,7 @@ const anonConfig = {
 export default class Connection {
   constructor (config, request) {
     this.config = config
-    // this.connection = this.config.connection
+    this.connection = this.config.connection
     this.request = request
   }
 
@@ -48,11 +48,7 @@ export default class Connection {
     return (metaId, args, data) => {
       // let query = new Query(config)
       fromDatum(method, metaId, args, data)
-
-      if (!this.config.roles) {
-        return toExecute(pg.connect(this.connection))
-      }
-      return toExecute(this.verifySession(this.request))
+      return toExecute(this.connect())
     }
   }
 
@@ -77,20 +73,24 @@ export default class Connection {
           [ req.cookies.session_id ])
           .then(result => {
             // Logged in
-            console.log('connection: result is : ', result.rows.length, result.rows)
+            console.log('connection: result -', result.rows.length, result.rows)
+
+            if (result.rows.length === 0) {
+              throw new Error('login failed')
+            }
 
             // Release Client
             client.release()
 
             // Copy anonymous config and modify user
             let userConfig = Object.assign({}, anonConfig, { user: result.rows[0].role_name })
-            console.log('connection: configs', userConfig, anonConfig)
+            console.log('connection: configs -', userConfig, anonConfig)
 
             return pg.connect(userConfig)
           })
           .catch(err => {
             // Problem logging in
-            console.log('connection: error is : ', err)
+            console.error('connection: error -', err)
 
             // Return client for next query
             return client
@@ -133,6 +133,6 @@ export default class Connection {
     if (!this.config.roles) {
       return pg.connect(this.connection)
     }
-    return this.verifySession(this.request)
+    return this.verifySession()
   }
 }
