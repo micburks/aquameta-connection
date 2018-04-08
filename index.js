@@ -37,7 +37,7 @@ const anonConfig = {
 export default class Connection {
   constructor (config, request) {
     this.config = config
-    this.connection = this.config.connection
+    // this.connection = this.config.connection
     this.request = request
   }
 
